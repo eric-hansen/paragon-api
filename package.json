@@ -15,7 +15,7 @@
     "api"
   ],
   "author": "Eric Hansen",
-  "license": "GPLv3",
+  "license": "zlib",
   "bugs": {
     "url": "https://github.com/eric-hansen/paragon-api/issues"
   },
