@@ -18,7 +18,6 @@ function createUrl(apiVersion, uri)
  * Make an API call to Epic Games' services and returns it to the callback.
  * The callback must except the parameters this in order: error, body
  *
- *
  * @param httpMethod
  * @param apiVersion
  * @param uri
