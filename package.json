@@ -15,9 +15,12 @@
     "api"
   ],
   "author": "Eric Hansen",
-  "license": "zlib",
+  "license": "Zlib",
   "bugs": {
     "url": "https://github.com/eric-hansen/paragon-api/issues"
   },
-  "homepage": "https://github.com/eric-hansen/paragon-api#readme"
+  "homepage": "https://github.com/eric-hansen/paragon-api#readme",
+  "dependencies": {
+    "request": "^2.75.0"
+  }
 }
