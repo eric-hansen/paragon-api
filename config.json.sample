@@ -1,0 +1,6 @@
+{
+    "key": "paragon-api-key",
+    "client-id": "the client id",
+    "client-secret": "secret of the client",
+    "base-uri": "https://developer-paragon.epicgames.com"
+}
