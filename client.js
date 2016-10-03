@@ -23,9 +23,9 @@ function createUrl(apiVersion, uri)
  * @param uri
  * @param authenticationHeader
  * @param callback
- * @param body
+ * @param requestBody
  */
-function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback, body) {
+function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback, requestBody) {
     var headers = {
         'X-Epic-ApiKey': config['api-key']
     };
@@ -38,7 +38,7 @@ function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback
         method: httpMethod
     };
 
-    if (body) options = Object.assign(options, {'body': body});
+    if (requestBody) options = Object.assign(options, {'body': requestBody});
 
     requester(options, function(error, response, body) {
         // Every response is JSON, so parse the string data as such now
