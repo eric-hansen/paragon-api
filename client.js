@@ -1,6 +1,5 @@
 const requester = require('request');
 const config = require('./config.json');
-const buffer = require('buffer');
 
 /**
  * Formats a URL for the API call.  Really right now this is only called twice, but best to have
@@ -234,7 +233,7 @@ function cardsGet(id, completeData, callback) {
  */
 function authToken(code, callback) {
     makeRequest('GET', 1, 'auth/token/'+code, {
-                'Authorization': 'Basic '+buffer.toBase64(config['client-id']+':'+config['client-secret'])
+                'Authorization': 'Basic '+(new Buffer(config['client-id']+':'+config['client-secret'], 'utf8')).toString('base64')
             }, function(error, response, body) {
         callback(error, body);
     });
