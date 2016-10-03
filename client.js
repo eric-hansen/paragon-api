@@ -42,7 +42,7 @@ function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback
 
     requester(options, function(error, response, body) {
         // Every response is JSON, so parse the string data as such now
-        body = JSON.parse(body);
+        if (body) body = JSON.parse(body);
 
         callback(error, response, body);
     });
