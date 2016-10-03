@@ -247,7 +247,7 @@ function authToken(code, callback) {
  * @param callback
  */
 function authLogin(callback) {
-    callback({}, {'url': createUrl(1, '/auth/login/'+config['client-id']+'?response_type=code'});
+    callback({}, {'url': createUrl(1, '/auth/login/'+config['client-id']+'?response_type=code')});
 }
 
 module.exports = {
