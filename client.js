@@ -232,8 +232,10 @@ function cardsGet(id, completeData, callback) {
  * @param callback
  */
 function authToken(code, callback) {
+    var b64 = new Buffer(config['client-id']+':'+config['client-secret']);
+
     makeRequest('GET', 1, 'auth/token/'+code, {
-                'Authorization': 'Basic '+(new Buffer(config['client-id']+':'+config['client-secret'], 'utf8')).toString('base64')
+                'Authorization': 'Basic '+b64.toString('base64')
             }, function(error, response, body) {
         callback(error, body);
     });
