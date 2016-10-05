@@ -30,7 +30,11 @@ function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback
         'X-Epic-ApiKey': config['api-key']
     };
 
-    if (authenticationHeader) headers = Object.assign(headers, authenticationHeader);
+    if (authenticationHeader) {
+        for (var header in authenticationHeader) {
+            headers[header] = authenticationHeader[header];
+        }
+    }
 
     var options = {
         url: createUrl(apiVersion, uri),
@@ -49,7 +53,7 @@ function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback
 
         console.log('API RESPONSE:');
         console.dir(body);
-        
+
         callback(error, response, body);
     });
 }
