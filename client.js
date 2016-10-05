@@ -27,7 +27,7 @@ function createUrl(apiVersion, uri)
  */
 function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback, requestBody) {
     var headers = {
-        'X-Epic-ApiKey': config['api-key']
+        'X-Epic-ApiKey': config['key']
     };
 
     if (authenticationHeader) {
