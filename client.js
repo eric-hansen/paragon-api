@@ -40,10 +40,16 @@ function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback
 
     if (requestBody) options = Object.assign(options, {'body': requestBody});
 
+    console.log('API CALL TO EPIC GAMES:');
+    console.dir(options);
+
     requester(options, function(error, response, body) {
         // Every response is JSON, so parse the string data as such now
         if (body) body = JSON.parse(body);
 
+        console.log('API RESPONSE:');
+        console.dir(body);
+        
         callback(error, response, body);
     });
 }
