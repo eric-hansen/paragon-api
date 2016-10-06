@@ -170,7 +170,10 @@ function accountGetDecks(accountId, token, callback) {
          * property.  However, the way to confidently check this is to ensure either the name field doesn't exist or
          * that the typeof for the array entry is undefined (even though it's an object....  I don't understand).
          */
+        console.log('Parsing deck body...');
+        console.dir(body);
         for (var decks = body.length; decks >= 0; decks--) {
+            console.log('Validating deck ID '+decks);
             if (body[decks].hasOwnProperty('name') == false || typeof body[decks] == 'undefined') {
                 body.splice(decks, 1);
             }
