@@ -48,7 +48,8 @@ module.exports = function(config) {
         requester(options, function (error, response, body) {
             // Every response is JSON, so parse the string data as such now
             if (body) body = JSON.parse(body);
-
+            if (error) error = JSON.parse(error);
+            
             callback(error, body);
         });
     }
