@@ -93,7 +93,7 @@ function accountFind(displayName, platform, token, callback) {
  * @param callback
  */
 function accountInformation(accountId, token, callback) {
-    makeRequest('GET', 1, '/account/'+accountId, {'Authorization': 'Bearer '+token}, callback);
+    makeRequest('GET', 1, 'account/'+accountId, {'Authorization': 'Bearer '+token}, callback);
 }
 
 /**
@@ -105,7 +105,7 @@ function accountInformation(accountId, token, callback) {
  * @param callback
  */
 function accountDeleteDeck(accountId, deckId, token, callback) {
-    makeRequest('DELETE', 1, '/account/'+accountId+'/deck/'+deckId, {'Authorization': 'Bearer '+token}, callback);
+    makeRequest('DELETE', 1, 'account/'+accountId+'/deck/'+deckId, {'Authorization': 'Bearer '+token}, callback);
 }
 
 /**
@@ -117,7 +117,7 @@ function accountDeleteDeck(accountId, deckId, token, callback) {
  * @param callback
  */
 function accountGetDeck(accountId, deckId, token, callback) {
-    makeRequest('GET', 1, '/account/'+accountId+'/deck/'+deckId, {'Authorization': 'Bearer '+token}, callback);
+    makeRequest('GET', 1, 'account/'+accountId+'/deck/'+deckId, {'Authorization': 'Bearer '+token}, callback);
 }
 
 /**
@@ -130,7 +130,7 @@ function accountGetDeck(accountId, deckId, token, callback) {
  * @param callback
  */
 function accountSaveDeck(accountId, deckId, deckSpec, token, callback) {
-    makeRequest('PUT', 1, '/account/'+accountId+'/deck/'+deckId, {'Authorization': 'Bearer '+token}, callback, deckSpec);
+    makeRequest('PUT', 1, 'account/'+accountId+'/deck/'+deckId, {'Authorization': 'Bearer '+token}, callback, deckSpec);
 }
 
 /**
@@ -142,7 +142,7 @@ function accountSaveDeck(accountId, deckId, deckSpec, token, callback) {
  * @param callback
  */
 function accountStats(accountId, token, callback) {
-    makeRequest('GET', 1, '/account/'+accountId+'/stats', {'Authorization': 'Bearer '+token}, callback);
+    makeRequest('GET', 1, 'account/'+accountId+'/stats', {'Authorization': 'Bearer '+token}, callback);
 }
 
 /**
@@ -179,7 +179,7 @@ function accountGetDecks(accountId, token, callback) {
         callback(error, body);
     }
 
-    makeRequest('GET', 1, '/account/'+accountId+'/decks', {'Authorization': 'Bearer '+token}, internalCallback);
+    makeRequest('GET', 1, 'account/'+accountId+'/decks', {'Authorization': 'Bearer '+token}, internalCallback);
 }
 
 /**
@@ -190,7 +190,7 @@ function accountGetDecks(accountId, token, callback) {
  * @param callback
  */
 function accountGetOwnedCards(accountId, token, callback) {
-    makeRequest('GET', 1, '/account/'+accountId+'/cards', {'Authorization': 'Bearer '+token}, callback);
+    makeRequest('GET', 1, 'account/'+accountId+'/cards', {'Authorization': 'Bearer '+token}, callback);
 }
 
 /**
