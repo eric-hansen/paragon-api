@@ -24,7 +24,9 @@ function callback(error, responseBody) {
 
     doSomethingWithJSONResponseBody(responseBody);
 }
-```, where both `error` and `responseBody` will be JSON objects based on API documentation.  Read: the client calls JSON.parse() on both properties prior to passing them to the callback.
+```
+
+where both `error` and `responseBody` will be JSON objects based on API documentation.  Read: the client calls JSON.parse() on both properties prior to passing them to the callback.
 
 ## How To Authenticate
 
