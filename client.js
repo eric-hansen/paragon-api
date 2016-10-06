@@ -54,7 +54,7 @@ function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback
         console.log('API RESPONSE:');
         console.dir(body);
 
-        callback(error, response, body);
+        callback(error, body);
     });
 }
 
