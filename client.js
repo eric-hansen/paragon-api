@@ -174,6 +174,7 @@ function accountGetDecks(accountId, token, callback) {
         console.dir(body);
         for (var decks = body.length; decks >= 0; decks--) {
             console.log('Validating deck ID '+decks);
+            console.dir(body[decks]);
             if (body[decks].hasOwnProperty('name') == false || typeof body[decks] == 'undefined') {
                 body.splice(decks, 1);
             }
