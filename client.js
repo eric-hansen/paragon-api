@@ -26,9 +26,9 @@ module.exports = function(config) {
      * @param callback
      * @param requestBody
      */
-    function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, callback, requestBody) {
+    function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, successFunction, errorFunction, requestBody) {
         var headers = {
-            'X-Epic-ApiKey': config['key']
+            'X-Epic-ApiKey': config.key
         };
 
         if (authenticationHeader) {
@@ -46,12 +46,10 @@ module.exports = function(config) {
         if (requestBody) options = Object.assign(options, {'body': requestBody});
 
         requester(options, function (error, response, body) {
-            // Every response is JSON, so parse the string data as such now
-            if (body) body = JSON.parse(body);
-            if (error) error = JSON.parse(error);
-            
-            callback(error, body);
-        });
+	    // Every response is JSON, so parse the string data as such now
+	    if (body) successFunction(JSON.parse(body));
+	    if (error) errorFunction(JSON.parse(error));
+       });
     }
 
     /**
@@ -67,18 +65,20 @@ module.exports = function(config) {
      * @param callback
      */
     functions.accountFind = function (displayName, platform, token, callback) {
-        if ((!displayName && !platform) || (!displayName && platform)) {
-            callback({'error': 'Display name is required, platform is optional.'}, {});
+      return new Promise(function(success, error) {
+	if ((!displayName && !platform) || (!displayName && platform)) {
+          error('Display name is required, platform is optional.');
         } else if (platform && (platform != 'EPIC' && platform != 'PSN')) {
-            callback({'error': 'Platform must either be EPIC or PSN.'}, {});
+          error('Platform must either be EPIC or PSN.');
         } else {
             var url = "accounts";
             if (platform) url += '/' + platform;
 
             url += '/' + displayName;
 
-            makeRequest('GET', 1, url, {'Authorization': 'Bearer ' + token}, callback);
-        }
+            return makeRequest('GET', 1, url, {'Authorization': 'Bearer ' + token}, success, error);
+	}
+      });
     };
 
     /**
@@ -167,7 +167,7 @@ module.exports = function(config) {
              * that the typeof for the array entry is undefined (even though it's an object....  I don't understand).
              */
             for (var decks = (body.length - 1); decks >= 0; decks--) {
-                if (body[decks].hasOwnProperty('name') == false || typeof body[decks] == 'undefined') {
+                if (body[decks].hasOwnProperty('name') === false || typeof body[decks] === 'undefined') {
                     body.splice(decks, 1);
                 }
             }
@@ -259,4 +259,4 @@ module.exports = function(config) {
     };
 
     return functions;
-}
+};
