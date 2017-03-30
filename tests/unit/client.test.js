@@ -1,7 +1,12 @@
 var should = require('should');
 var describe = require('mocha').describe;
 var it = require('mocha').it;
-const config = require('../../config.json');
+var config = {
+    "key": "paragon-api-key",
+    "client-id": "the client id",
+    "client-secret": "secret of the client",
+    "base-uri": "https://developer-paragon.epicgames.com"
+};
 var client = require('../../client')(config);
 
 describe('Paragon API Node Client', function () {
