@@ -16,17 +16,11 @@ This client supports all documented API endpoints as of 2016-10-05.
 
 ## Callback Format
 
-All callbacks need to be passed in such as:
+Callbacks are no longer supported and follow the paradigm of Promises.
 
-```javascript
-function callback(error, responseBody) {
-    if (error) handleError(error);
+## Returned Data
 
-    doSomethingWithJSONResponseBody(responseBody);
-}
-```
-
-where both `error` and `responseBody` will be JSON objects based on API documentation.  Read: the client calls JSON.parse() on both properties prior to passing them to the callback.
+On success, you will receive an object of the data (because I'm that nice).  On error, the response will be an object of the error response that the API server provided.
 
 ## How To Authenticate
 
@@ -41,8 +35,8 @@ This is a special case in where once-used-but-not-anymore deck slots will still 
 
 ## TODO
 
-[x] Make this use promise-style logic instead
-[] Support more endpoints when the API is updated
-[] Add in some extra features??
-[] Write tests
-[] Implement mocking for API calls to Paragon services (yes, for tests, but a reminder to do it would be nice)
+- [x] Make this use promise-style logic instead
+- [] Support more endpoints when the API is updated
+- [] Add in some extra features??
+- [] Write tests
+- [] Implement mocking for API calls to Paragon services (yes, for tests, but a reminder to do it would be nice)
