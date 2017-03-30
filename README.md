@@ -41,6 +41,8 @@ This is a special case in where once-used-but-not-anymore deck slots will still 
 
 ## TODO
 
-1.  Make this use promise-style logic instead
-2.  Support more endpoints when the API is updated
-3.  Add in some extra features??
+[x] Make this use promise-style logic instead
+[] Support more endpoints when the API is updated
+[] Add in some extra features??
+[] Write tests
+[] Implement mocking for API calls to Paragon services (yes, for tests, but a reminder to do it would be nice)
