@@ -1,8 +1,8 @@
 var should = require('should');
 var describe = require('mocha').describe;
 var it = require('mocha').it;
-const config = require('../config.json');
-var client = require('../client')(config);
+const config = require('../../config.json');
+var client = require('../../client')(config);
 
 describe('Paragon API Node Client', function () {
 
