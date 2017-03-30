@@ -23,10 +23,9 @@ module.exports = function(config) {
      * @param apiVersion
      * @param uri
      * @param authenticationHeader
-     * @param callback
      * @param requestBody
      */
-    function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, successFunction, errorFunction, requestBody) {
+    function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, requestBody) {
         var headers = {
             'X-Epic-ApiKey': config.key
         };
@@ -45,10 +44,12 @@ module.exports = function(config) {
 
         if (requestBody) options = Object.assign(options, {'body': requestBody});
 
-        requester(options, function (error, response, body) {
-	    // Every response is JSON, so parse the string data as such now
-	    if (body) successFunction(JSON.parse(body));
-	    if (error) errorFunction(JSON.parse(error));
+        return new Promise(function(resolve, reject) {
+            requester(options, function (error, response, body) {
+                // Every response is JSON, so parse the string data as such now
+                if (body) resolve(JSON.parse(body));
+                if (error) reject(JSON.parse(error));
+            });
        });
     }
 
@@ -62,22 +63,26 @@ module.exports = function(config) {
      * @param displayName
      * @param platform
      * @param token
-     * @param callback
      */
-    functions.accountFind = function (displayName, platform, token, callback) {
+    functions.accountFind = function (displayName, platform, token) {
       return new Promise(function(success, error) {
-	if ((!displayName && !platform) || (!displayName && platform)) {
-          error('Display name is required, platform is optional.');
-        } else if (platform && (platform != 'EPIC' && platform != 'PSN')) {
-          error('Platform must either be EPIC or PSN.');
+        if ((!displayName && !platform) || (!displayName && platform)) {
+            error('Display name is required, platform is optional.');
+        } else if (platform && (platform !== 'EPIC' && platform !== 'PSN')) {
+            error('Platform must either be EPIC or PSN.');
         } else {
             var url = "accounts";
             if (platform) url += '/' + platform;
 
             url += '/' + displayName;
 
-            return makeRequest('GET', 1, url, {'Authorization': 'Bearer ' + token}, success, error);
-	}
+            return makeRequest(
+                'GET',
+                1,
+                url,
+                {'Authorization': 'Bearer ' + token}
+            );
+        }
       });
     };
 
@@ -86,10 +91,14 @@ module.exports = function(config) {
      *
      * @param accountId
      * @param token
-     * @param callback
      */
-    functions.accountInformation = function(accountId, token, callback) {
-        makeRequest('GET', 1, 'account/' + accountId, {'Authorization': 'Bearer ' + token}, callback);
+    functions.accountInformation = function(accountId, token) {
+        return makeRequest(
+                'GET',
+                1,
+                'account/' + accountId,
+                {'Authorization': 'Bearer ' + token}
+        );
     };
 
     /**
@@ -98,10 +107,14 @@ module.exports = function(config) {
      * @param accountId
      * @param deckId
      * @param token
-     * @param callback
      */
-    functions.accountDeleteDeck = function(accountId, deckId, token, callback) {
-        makeRequest('DELETE', 1, 'account/' + accountId + '/deck/' + deckId, {'Authorization': 'Bearer ' + token}, callback);
+    functions.accountDeleteDeck = function(accountId, deckId, token) {
+        return makeRequest(
+                'DELETE',
+                1,
+                'account/' + accountId + '/deck/' + deckId,
+                {'Authorization': 'Bearer ' + token}
+        );
     };
 
     /**
@@ -110,10 +123,14 @@ module.exports = function(config) {
      * @param accountId
      * @param deckId
      * @param token
-     * @param callback
      */
-    functions.accountGetDeck = function(accountId, deckId, token, callback) {
-        makeRequest('GET', 1, 'account/' + accountId + '/deck/' + deckId, {'Authorization': 'Bearer ' + token}, callback);
+    functions.accountGetDeck = function(accountId, deckId, token) {
+        return makeRequest(
+                'GET',
+                1,
+                'account/' + accountId + '/deck/' + deckId,
+                {'Authorization': 'Bearer ' + token}
+        );
     };
 
     /**
@@ -123,10 +140,15 @@ module.exports = function(config) {
      * @param deckId
      * @param deckSpec
      * @param token
-     * @param callback
      */
-    functions.accountSaveDeck = function(accountId, deckId, deckSpec, token, callback) {
-        makeRequest('PUT', 1, 'account/' + accountId + '/deck/' + deckId, {'Authorization': 'Bearer ' + token}, callback, deckSpec);
+    functions.accountSaveDeck = function(accountId, deckId, deckSpec, token) {
+        return makeRequest(
+                'PUT',
+                1,
+                'account/' + accountId + '/deck/' + deckId,
+                {'Authorization': 'Bearer ' + token},
+                deckSpec
+        );
     };
 
     /**
@@ -135,10 +157,14 @@ module.exports = function(config) {
      *
      * @param accountId
      * @param token
-     * @param callback
      */
-    functions.accountStats = function(accountId, token, callback) {
-        makeRequest('GET', 1, 'account/' + accountId + '/stats', {'Authorization': 'Bearer ' + token}, callback);
+    functions.accountStats = function(accountId, token) {
+        return makeRequest(
+                'GET',
+                1,
+                'account/' + accountId + '/stats',
+                {'Authorization': 'Bearer ' + token}
+        );
     };
 
     /**
@@ -149,12 +175,9 @@ module.exports = function(config) {
      *
      * @param accountId
      * @param token
-     * @param callback
      */
-    functions.accountGetDecks = function(accountId, token, callback) {
-        function internalCallback(error, body) {
-            if (error) return callback(error, body);
-
+    functions.accountGetDecks = function(accountId, token) {
+        function internalCallback(body) {
             /**
              * This is an odd situation.  There might be a more optimal way of doing this, too, so it is more than welcome.
              *
@@ -165,6 +188,8 @@ module.exports = function(config) {
              * This for loop is meant to eliminate these types of decks, which is basically an object with only an "id"
              * property.  However, the way to confidently check this is to ensure either the name field doesn't exist or
              * that the typeof for the array entry is undefined (even though it's an object....  I don't understand).
+             *
+             * @TODO: Look at using lodash for this instead of repeating it's beautiful logic
              */
             for (var decks = (body.length - 1); decks >= 0; decks--) {
                 if (body[decks].hasOwnProperty('name') === false || typeof body[decks] === 'undefined') {
@@ -172,10 +197,21 @@ module.exports = function(config) {
                 }
             }
 
-            callback(error, body);
+            return body;
         }
 
-        makeRequest('GET', 1, 'account/' + accountId + '/decks', {'Authorization': 'Bearer ' + token}, internalCallback);
+        return new Promise(function(success, error) {
+            makeRequest(
+                'GET',
+                1,
+                'account/' + accountId + '/decks',
+                {'Authorization': 'Bearer ' + token}
+            ).then(function (responseBody) {
+                success(internalCallback(responseBody));
+            }).catch(function (errorBody) {
+                error(errorBody);
+            });
+        });
     };
 
     /**
@@ -183,10 +219,14 @@ module.exports = function(config) {
      *
      * @param accountId
      * @param token
-     * @param callback
      */
-    functions.accountGetOwnedCards = function(accountId, token, callback) {
-        makeRequest('GET', 1, 'account/' + accountId + '/cards', {'Authorization': 'Bearer ' + token}, callback);
+    functions.accountGetOwnedCards = function(accountId, token) {
+        return makeRequest(
+            'GET',
+            1,
+            'account/' + accountId + '/cards',
+            {'Authorization': 'Bearer ' + token}
+        );
     };
 
     /**
@@ -194,15 +234,18 @@ module.exports = function(config) {
      *
      * @param id
      * @param completeData
-     * @param callback
      */
-    functions.heroesGet = function(id, completeData, callback) {
+    functions.heroesGet = function(id, completeData) {
         var url = 'heroes';
 
         if (id) url = 'hero/' + id;
         if (completeData) url = 'heroes/complete';
 
-        makeRequest('GET', 1, url, false, callback);
+        return makeRequest(
+            'GET',
+            1,
+            url
+        );
     };
 
     /**
@@ -213,15 +256,18 @@ module.exports = function(config) {
      *
      * @param id
      * @param completeData
-     * @param callback
      */
-    functions.cardsGet = function(id, completeData, callback) {
+    functions.cardsGet = function(id, completeData) {
         var url = 'cards';
 
         if (id) url = 'card/' + id;
         if (completeData) url = 'cards/complete';
 
-        makeRequest('GET', 1, url, false, callback);
+       return  makeRequest(
+           'GET',
+           1,
+           url
+       );
     };
 
     /**
@@ -235,27 +281,34 @@ module.exports = function(config) {
 
     /**
      * @param code
-     * @param callback
      */
-    functions.authToken = function(code, callback) {
+    functions.authToken = function(code) {
         var b64 = new Buffer(config['client-id'] + ':' + config['client-secret']);
 
-        makeRequest('GET', 1, 'auth/token/' + code, {
-            'Authorization': 'Basic ' + b64.toString('base64')
-        }, function (error, body) {
-            callback(error, body);
-        });
+        return makeRequest(
+            'GET',
+            1,
+            'auth/token/' + code,
+            {'Authorization': 'Basic ' + b64.toString('base64')}
+        );
     };
 
     /**
      * "response_type" is needed or else the end user will see a confusing error message.  We could force a redirect
      * through here, but that shouldn't be the responsibility of an agnostic API wrapper.  So, just return the URL
      * through the body parameter and call it a day.
-     *
-     * @param callback
      */
-    functions.authLogin = function(callback) {
-        callback({}, {'url': createUrl(1, 'auth/login/' + config['client-id'] + '?response_type=code')});
+    functions.authLogin = function() {
+        return new Promise(function(resolve, reject) {
+            if (!config.hasOwnProperty('client-id')) reject('Config is missing "client-id" key.');
+            else {
+                resolve({
+                    'url': createUrl(
+                        1,
+                        'auth/login/' + config['client-id'] + '?response_type=code')
+                });
+            }
+        });
     };
 
     return functions;
