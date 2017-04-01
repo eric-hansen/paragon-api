@@ -1,7 +1,9 @@
 module.exports = function(config) {
     const requester = require('request');
 
-    var functions = {};
+    let _ = require('lodash');
+
+    let functions = {};
 
     /**
      * Formats a URL for the API call.  Really right now this is only called twice, but best to have
@@ -25,7 +27,7 @@ module.exports = function(config) {
      * @param authenticationHeader
      * @param requestBody
      */
-    function makeRequest(httpMethod, apiVersion, uri, authenticationHeader, requestBody) {
+    functions.makeRequest = function(httpMethod, apiVersion, uri, authenticationHeader, requestBody) {
         var headers = {
             'X-Epic-ApiKey': config.key
         };
@@ -76,7 +78,7 @@ module.exports = function(config) {
 
             url += '/' + displayName;
 
-            return makeRequest(
+            return module.exports.makeRequest(
                 'GET',
                 1,
                 url,
@@ -93,7 +95,7 @@ module.exports = function(config) {
      * @param token
      */
     functions.accountInformation = function(accountId, token) {
-        return makeRequest(
+        return module.exports.makeRequest(
                 'GET',
                 1,
                 'account/' + accountId,
@@ -109,7 +111,7 @@ module.exports = function(config) {
      * @param token
      */
     functions.accountDeleteDeck = function(accountId, deckId, token) {
-        return makeRequest(
+        return module.exports.makeRequest(
                 'DELETE',
                 1,
                 'account/' + accountId + '/deck/' + deckId,
@@ -125,7 +127,7 @@ module.exports = function(config) {
      * @param token
      */
     functions.accountGetDeck = function(accountId, deckId, token) {
-        return makeRequest(
+        return module.exports.makeRequest(
                 'GET',
                 1,
                 'account/' + accountId + '/deck/' + deckId,
@@ -142,7 +144,7 @@ module.exports = function(config) {
      * @param token
      */
     functions.accountSaveDeck = function(accountId, deckId, deckSpec, token) {
-        return makeRequest(
+        return module.exports.makeRequest(
                 'PUT',
                 1,
                 'account/' + accountId + '/deck/' + deckId,
@@ -159,12 +161,31 @@ module.exports = function(config) {
      * @param token
      */
     functions.accountStats = function(accountId, token) {
-        return makeRequest(
+        return module.exports.makeRequest(
                 'GET',
                 1,
                 'account/' + accountId + '/stats',
                 {'Authorization': 'Bearer ' + token}
         );
+    };
+
+    functions.deckFilter = function(deckData) {
+        /**
+         * This is an odd situation.  There might be a more optimal way of doing this, too, so it is more than welcome.
+         *
+         * Take, for example, you create a deck within the game.  Then you delete it.  While you can't actually ever
+         * view the deck again (rightfully so), you still have a reference to what is basically an orphan deck at this
+         * point.
+         *
+         * This for loop is meant to eliminate these types of decks, which is basically an object with only an "id"
+         * property.  However, the way to confidently check this is to ensure either the name field doesn't exist or
+         * that the typeof for the array entry is undefined (even though it's an object....  I don't understand).
+         */
+        return _.forEach(deckData, function (deck, index) {
+            if (typeof deck === 'undefined' || deck.hasOwnProperty('name') === false) {
+                deckData.splice(index, 1);
+            }
+        });
     };
 
     /**
@@ -177,37 +198,14 @@ module.exports = function(config) {
      * @param token
      */
     functions.accountGetDecks = function(accountId, token) {
-        function internalCallback(body) {
-            /**
-             * This is an odd situation.  There might be a more optimal way of doing this, too, so it is more than welcome.
-             *
-             * Take, for example, you create a deck within the game.  Then you delete it.  While you can't actually ever
-             * view the deck again (rightfully so), you still have a reference to what is basically an orphan deck at this
-             * point.
-             *
-             * This for loop is meant to eliminate these types of decks, which is basically an object with only an "id"
-             * property.  However, the way to confidently check this is to ensure either the name field doesn't exist or
-             * that the typeof for the array entry is undefined (even though it's an object....  I don't understand).
-             *
-             * @TODO: Look at using lodash for this instead of repeating it's beautiful logic
-             */
-            for (var decks = (body.length - 1); decks >= 0; decks--) {
-                if (body[decks].hasOwnProperty('name') === false || typeof body[decks] === 'undefined') {
-                    body.splice(decks, 1);
-                }
-            }
-
-            return body;
-        }
-
         return new Promise(function(success, error) {
-            makeRequest(
+            module.exports.makeRequest(
                 'GET',
                 1,
                 'account/' + accountId + '/decks',
                 {'Authorization': 'Bearer ' + token}
             ).then(function (responseBody) {
-                success(internalCallback(responseBody));
+                success(module.exports.deckFilter(responseBody));
             }).catch(function (errorBody) {
                 error(errorBody);
             });
@@ -221,7 +219,7 @@ module.exports = function(config) {
      * @param token
      */
     functions.accountGetOwnedCards = function(accountId, token) {
-        return makeRequest(
+        return module.exports.makeRequest(
             'GET',
             1,
             'account/' + accountId + '/cards',
@@ -241,7 +239,7 @@ module.exports = function(config) {
         if (id) url = 'hero/' + id;
         if (completeData) url = 'heroes/complete';
 
-        return makeRequest(
+        return module.exports.makeRequest(
             'GET',
             1,
             url
@@ -263,7 +261,7 @@ module.exports = function(config) {
         if (id) url = 'card/' + id;
         if (completeData) url = 'cards/complete';
 
-       return  makeRequest(
+       return  module.exports.makeRequest(
            'GET',
            1,
            url
@@ -285,7 +283,7 @@ module.exports = function(config) {
     functions.authToken = function(code) {
         var b64 = new Buffer(config['client-id'] + ':' + config['client-secret']);
 
-        return makeRequest(
+        return module.exports.makeRequest(
             'GET',
             1,
             'auth/token/' + code,
